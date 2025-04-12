@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO</title>
+</head>
+<body>
+    <h1>Welcome to UNO online.</h1>
+    <button id="create_room">Create Room</button>
+    <label for="NumberOfCards">Select the number of cards</label>
+    <select id="NumberOfCards" name="NumberOfCards">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+    </select><br>
+    <label for="ROOM_KEY">Room Id</label>
+    <input type="text" name="ROOM_KEY" id="join_room_with_room_key">
+    <button id="join_with_key_btn">join</button>
+    <button id="startbtn">Start Game</button>
+    <div id="received_cards"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="room.js"></script>
+</body>
+</html>
