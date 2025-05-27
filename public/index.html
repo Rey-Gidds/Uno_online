@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UNO</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <h1>Welcome to UNO online.</h1>
@@ -22,7 +23,14 @@
     <input type="text" name="ROOM_KEY" id="join_room_with_room_key">
     <button id="join_with_key_btn">join</button>
     <button id="startbtn">Start Game</button>
-    <div id="received_cards"></div>
+    <p id="display_roomKey"></p>
+    <div id="users_joined"></div>
+    <div id="your_turn"></div>
+    <div id="not_your_turn"></div>
+    <div id="playing_stack"></div>
+    <div id="my_bundle"></div>
+    <button id="reserve_stack">Pick a card</button>
+    <button id="passBtn">Pass Turn</button>
     <script src="/socket.io/socket.io.js"></script>
     <script src="room.js"></script>
 </body>
