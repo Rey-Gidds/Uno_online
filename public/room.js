@@ -203,7 +203,8 @@ user.on('choose_wild_color' , () => {
             3) Green
             4) Blue
         `));
-    }while(color === null || color.trim() === '');
+        console.log('Color value: ' , color);
+    }while(!color);
     
     switch(color){
         case 1:
