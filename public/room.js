@@ -194,15 +194,8 @@ user.on('display_uno_free' , () => {
 })
 
 user.on('choose_wild_color' , () => {
-    let color = parseInt(prompt(`
-        Choose the Color:
-        1) Yellow
-        2) Red
-        3) Green
-        4) Blue
-    `));
-
-    while(color < 1 && color > 4){
+    let color = null;
+    do{
         color = parseInt(prompt(`
             Choose the Color:
             1) Yellow
@@ -210,7 +203,7 @@ user.on('choose_wild_color' , () => {
             3) Green
             4) Blue
         `));
-    }
+    }while(color === null || color.trim() === '');
     
     switch(color){
         case 1:

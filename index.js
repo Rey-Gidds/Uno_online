@@ -363,7 +363,7 @@ io.on('connection' , (user) => {
         })
 
         user.on('disconnect' , () => {
-            users_in_room[ROOM_KEY][user.id].forEach(card => reserve_stack_in_room[ROOM_KEY].push(card)); // To hand back the cards held by the user to the reserve stack in the room.
+            (users_in_room[ROOM_KEY][user.id]).forEach(card => reserve_stack_in_room[ROOM_KEY].push(card)); // To hand back the cards held by the user to the reserve stack in the room.
             delete users_in_room[ROOM_KEY][user.id];
             delete player_indexes[ROOM_KEY];
             turn_wheel[ROOM_KEY].filter(user => user != user.id);
