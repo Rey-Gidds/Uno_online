@@ -172,6 +172,7 @@ function play_turn(number , color , room_key, userId , index){
             let free_user_index = player_indexes[userId] - 1;
             let player_index = free_user_index + 1;
             io.to(room_key).emit('uno_free_event' , player_index);
+            io.to(userId).emit('display_uno_free');
             turn_wheel[room_key].splice(free_user_index , 1); // removing the user from the turn wheel since he/she is uno free.
         }
         io.to(userId).emit('update_the_bundle' , users_in_room[room_key][userId]); // update the bundle on the frontend simultaneously
@@ -194,8 +195,6 @@ function isUNO(user_bundle){
 
 // Helper function to check the uno free event
 function isUNOfree(user_bundle){
-    console.log('User bundle empty? : ' , !user_bundle);
-    console.log('user bundle: ' , user_bundle);
     if(user_bundle.length == 0){
         return true
     }
@@ -297,7 +296,7 @@ io.on('connection' , (user) => {
         if(!users_in_room[ROOM_KEY]){
             users_in_room[ROOM_KEY] = {};
             playing_stack_in_room[ROOM_KEY] = [];
-            reserve_stack_in_room[ROOM_KEY] = DECK_OF_CARDS;
+            reserve_stack_in_room[ROOM_KEY] = [...DECK_OF_CARDS]; // Shallow copy of ddeck of cards to maintain for each room.
             turn_wheel[ROOM_KEY] = [];
         }
         if(isCreate){
@@ -361,6 +360,19 @@ io.on('connection' , (user) => {
 
         user.on('pass_turn' , (room_key) => {
             update_turn(room_key , turn_wheel[room_key].length - 1); // give the user one card picked by his or her own choice
+        })
+
+        user.on('disconnect' , () => {
+            users_in_room[ROOM_KEY][user.id].forEach(card => reserve_stack_in_room[ROOM_KEY].push(card)); // To hand back the cards held by the user to the reserve stack in the room.
+            delete users_in_room[ROOM_KEY][user.id];
+            delete player_indexes[ROOM_KEY];
+            turn_wheel[ROOM_KEY].filter(user => user != user.id);
+            if(Object.keys(users_in_room[ROOM_KEY]).length == 0){
+                delete users_in_room[ROOM_KEY];
+                delete turn_wheel[ROOM_KEY];
+                delete reserve_stack_in_room[ROOM_KEY];
+                delete playing_stack_in_room[ROOM_KEY];
+            }
         })
     })
 

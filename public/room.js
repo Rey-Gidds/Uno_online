@@ -20,7 +20,6 @@ let isCreate = false;
 let myturn = false;
 let picked = false;
 let index = 0;
-let p_index = null;
 let joined = false;
 not_your_turn.style.display = 'none';
 your_turn.style.display = 'none';
@@ -125,7 +124,6 @@ display_bundle.addEventListener('click', (e) => {
         let color = card.getAttribute('data-color');
         let index = card.getAttribute('data-index');
         play_card(number, color , user_id , index);
-        console.log(myBundle);
     }
     your_turn.style.display = 'none';
     not_your_turn.style.display = 'block';
@@ -163,7 +161,6 @@ create_room.addEventListener('click' , () => {
 
 select_number_of_cards.addEventListener('change' , (event) => {
     selected_number = event.target.value;
-    console.log(selected_number)
 })
 
 user.on('update_playing_stack' , (number , color) => {
@@ -173,32 +170,27 @@ user.on('update_playing_stack' , (number , color) => {
 user.on('take_user_id' , (userId) => {
     user_id = userId;
     joined = true;
-    console.log('Taken_user_id' , user_id);
 })
 
 user.on('Wait_for_your_turn' , (msg) => {
     alert(msg); // wait for the turn to be able to pick the card.
 })
 
-user.on('take_player_index' , (player_index) => {
-    if(!p_index){
-        p_index = player_index;
-    }
-    return;
-})
-
 user.on('uno_event' , (player_index) => {
-    console.log('Player index: ' , player_index);
     if(player_index){
         alert(`${player_index}: UNO !`);
     }
 })
 
 user.on('uno_free_event' , (player_index) => {
-    console.log('Player index: ' , player_index);
     if(player_index){
         alert(`${player_index}: UNO FREE !`);
     }
+})
+
+user.on('display_uno_free' , () => {
+    not_your_turn.style.display = 'none';
+    your_turn.innerHTML = 'UNO FREE';
 })
 
 user.on('choose_wild_color' , () => {
