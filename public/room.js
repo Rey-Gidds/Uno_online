@@ -1,4 +1,4 @@
-const user = io('https://uno-online-qns0.onrender.com/')
+const user = io('https://uno-online-qns0.onrender.com')
 const create_room = document.getElementById('create_room')
 const select_number_of_cards = document.getElementById('NumberOfCards')
 const join_with_key = document.getElementById('join_room_with_room_key')
