@@ -322,7 +322,7 @@ io.on('connection' , (user) => {
         
         player_indexes[user.id] = p_index;
         console.log(`${user.id} : ${player_indexes[user.id]}`);
-        io.to(ROOM_KEY).emit('update_active_users' , users_in_room[ROOM_KEY]);
+        io.to(ROOM_KEY).emit('update_active_users' , turn_wheel[ROOM_KEY]);
     
         user.on('start_cards_distribution' , (room_key) => {
             if(turn_wheel[room_key].length > 1){
