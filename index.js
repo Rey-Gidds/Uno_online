@@ -380,7 +380,7 @@ io.on('connection' , (user) => {
             }
 
             const disconnected_index = player_indexes[user.id];
-            shiftIndexes(ROOM_KEY, disconnected_index); // optional if turn_wheel is fixed manually
+            shiftIndexes(ROOM_KEY, disconnected_index);
 
             io.to(ROOM_KEY).emit('remove_user_ball', user.id);
 
@@ -388,7 +388,7 @@ io.on('connection' , (user) => {
             delete player_indexes[user.id];
 
             // Remove user from turn wheel and fix pointer
-            turn_wheel[ROOM_KEY] = turn_wheel[ROOM_KEY].filter(id => id !== user.id);
+            turn_wheel[ROOM_KEY] = (turn_wheel[ROOM_KEY]).filter(id => id != user.id);
 
             console.log('Turn Wheel: ', turn_wheel[ROOM_KEY]);
 
