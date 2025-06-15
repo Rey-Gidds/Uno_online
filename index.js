@@ -4,6 +4,7 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const { start } = require('repl');
 
 const io = new Server(server , {
     maxHttpBufferSize: 5e6,
@@ -287,7 +288,12 @@ function playerIndex(userId , room_key){
     return null;
 }
 
-
+function shiftIndexes(roomkey , startfrom){
+    for(let i = startfrom - 1 ; i<turn_wheel[roomkey].length ; i++){
+        turn_wheel[roomkey][i] -= 1;
+    }
+    return;
+}
 
 
 // Socket handling 
@@ -370,11 +376,13 @@ io.on('connection' , (user) => {
 
         user.on('disconnect' , () => {
             (users_in_room[ROOM_KEY][user.id]).forEach(card => reserve_stack_in_room[ROOM_KEY].push(card)); // To hand back the cards held by the user to the reserve stack in the room.
-
+            let disconnected_index = player_indexes[ROOM_KEY][user.id];
+            shiftIndexes(ROOM_KEY , disconnected_index);
             io.to(ROOM_KEY).emit('remove_user_ball' , user.id);
             delete users_in_room[ROOM_KEY][user.id];
             delete player_indexes[ROOM_KEY];
-            turn_wheel[ROOM_KEY].filter(user => user != user.id);
+            (turn_wheel[ROOM_KEY]).filter(user => user != user.id);
+            console.log('Turn Wheel: ' , turn_wheel[ROOM_KEY]);
             if(Object.keys(users_in_room[ROOM_KEY]).length == 0){
                 delete users_in_room[ROOM_KEY];
                 delete turn_wheel[ROOM_KEY];
