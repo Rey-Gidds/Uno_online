@@ -301,7 +301,7 @@ io.on('connection' , (user) => {
             turn_wheel[ROOM_KEY] = [];
         }
         else if(users_in_room[ROOM_KEY]['started']){ // denying connection to the room if the game has already been started.
-            io.to(user.id).emit('Cannot join , game has already been started :(');
+            io.to(user.id).emit('denied_connection' , 'Cannot join , game has already been started :(');
             return;
         }
         else if(Object.keys(users_in_room[ROOM_KEY]).length > MAX_USERS_PER_ROOM){
