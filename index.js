@@ -376,7 +376,7 @@ io.on('connection' , (user) => {
 
         user.on('disconnect' , () => {
             (users_in_room[ROOM_KEY][user.id]).forEach(card => reserve_stack_in_room[ROOM_KEY].push(card)); // To hand back the cards held by the user to the reserve stack in the room.
-            let disconnected_index = player_indexes[ROOM_KEY][user.id];
+            let disconnected_index = player_indexes[user.id];
             shiftIndexes(ROOM_KEY , disconnected_index);
             io.to(ROOM_KEY).emit('remove_user_ball' , user.id);
             delete users_in_room[ROOM_KEY][user.id];

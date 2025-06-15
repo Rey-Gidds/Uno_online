@@ -193,6 +193,9 @@ user.on('remove_user_ball' , (userId) => {
     if(disconnectedUserBAll){
         disconnectedUserBAll.remove();
     }
+    else{
+        console.log('Error removing the user ball , maybe the user ball with the userID does not exist');
+    }
     return;
 })
 
