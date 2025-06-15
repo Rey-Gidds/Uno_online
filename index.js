@@ -278,8 +278,13 @@ function update_turn(room_key , max_members){
 }
 
 // Helper function to assign the player indexes to every user joined in the respective room. Eg: player 1 , player 2 , ... for a specific room.
-function playerIndex(room_key){
-    return turn_wheel[room_key].length - 1;
+function playerIndex(userId , room_key){
+    for(let i = 0 ; i < turn_wheel[room_key].length; i++){
+        if(userId === turn_wheel[room_key][i]){
+            return i + 1;
+        }
+    }
+    return null;
 }
 
 
@@ -288,37 +293,41 @@ function playerIndex(room_key){
 // Socket handling 
 io.on('connection' , (user) => {
     user.on('join_room' , (ROOM_KEY , selected_number , isCreate) => {
-        if(!users_in_room[ROOM_KEY]){ // forming an entirely new room.
+        if(!users_in_room[ROOM_KEY]){
             users_in_room[ROOM_KEY] = {};
+            users_in_room[ROOM_KEY]['started'] = false;
             playing_stack_in_room[ROOM_KEY] = [];
             reserve_stack_in_room[ROOM_KEY] = [...DECK_OF_CARDS]; // Shallow copy of ddeck of cards to maintain for each room.
             turn_wheel[ROOM_KEY] = [];
-            turn_wheel[ROOM_KEY].push(user.id); // pushing the creator of the room.
         }
-        else{
-            let turn_index = turn_wheel[ROOM_KEY].pop();
-            turn_wheel[ROOM_KEY].push(user.id);
-            turn_wheel[ROOM_KEY].push(turn_index); // keeping the turn index always at the last if the room is not empty and another user is added.
-        }
-        if(isCreate){
-            max_cards[ROOM_KEY] = selected_number;
+        else if(users_in_room[ROOM_KEY]['started']){ // denying connection to the room if the game has already been started.
+            io.to(user.id).emit('Cannot join , game has already been started :(');
+            return;
         }
         else if(Object.keys(users_in_room[ROOM_KEY]).length > MAX_USERS_PER_ROOM){
             io.to(user.id).emit('denied_connection' , 'Room is full :(');
             return;
         }
+        if(isCreate){
+            max_cards[ROOM_KEY] = selected_number;
+        }
         
         user.join(ROOM_KEY);
+
         io.to(user.id).emit('take_user_id' , user.id); // Take the user id generated at the frontend for further verification of who made the move.
+        
         users_in_room[ROOM_KEY][user.id] = [];
-        p_index = playerIndex(ROOM_KEY);
+        turn_wheel[ROOM_KEY].push(user.id);
+        p_index = playerIndex(user.id , ROOM_KEY);
+        
         player_indexes[user.id] = p_index;
         console.log(`${user.id} : ${player_indexes[user.id]}`);
         io.to(ROOM_KEY).emit('update_active_users' , users_in_room[ROOM_KEY]);
     
         user.on('start_cards_distribution' , (room_key) => {
             if(turn_wheel[room_key].length > 1){
-                turn_wheel[room_key].push(0); // Pointer to the first turn as index 0 stored at the last index of the turn wheel
+                users_in_room[room_key]['started'] = true;
+                turn_wheel[ROOM_KEY].push(0); // Pointer to the first turn as index 0 stored at the last index of the turn wheel
                 Object.keys(users_in_room[room_key]).forEach(user => {
                     draw_cards(room_key ,user, max_cards[room_key]) // Give cards to the room initially.
                 })
