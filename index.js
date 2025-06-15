@@ -288,11 +288,17 @@ function playerIndex(room_key){
 // Socket handling 
 io.on('connection' , (user) => {
     user.on('join_room' , (ROOM_KEY , selected_number , isCreate) => {
-        if(!users_in_room[ROOM_KEY]){
+        if(!users_in_room[ROOM_KEY]){ // forming an entirely new room.
             users_in_room[ROOM_KEY] = {};
             playing_stack_in_room[ROOM_KEY] = [];
             reserve_stack_in_room[ROOM_KEY] = [...DECK_OF_CARDS]; // Shallow copy of ddeck of cards to maintain for each room.
             turn_wheel[ROOM_KEY] = [];
+            turn_wheel[ROOM_KEY].push(user.id); // pushing the creator of the room.
+        }
+        else{
+            let turn_index = turn_wheel[ROOM_KEY].pop();
+            turn_wheel[ROOM_KEY].push(user.id);
+            turn_wheel[ROOM_KEY].push(turn_index); // keeping the turn index always at the last if the room is not empty and another user is added.
         }
         if(isCreate){
             max_cards[ROOM_KEY] = selected_number;
@@ -303,13 +309,9 @@ io.on('connection' , (user) => {
         }
         
         user.join(ROOM_KEY);
-
         io.to(user.id).emit('take_user_id' , user.id); // Take the user id generated at the frontend for further verification of who made the move.
-        
         users_in_room[ROOM_KEY][user.id] = [];
-        turn_wheel[ROOM_KEY].push(user.id);
         p_index = playerIndex(ROOM_KEY);
-        
         player_indexes[user.id] = p_index;
         console.log(`${user.id} : ${player_indexes[user.id]}`);
         io.to(ROOM_KEY).emit('update_active_users' , users_in_room[ROOM_KEY]);
