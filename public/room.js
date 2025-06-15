@@ -71,7 +71,7 @@ function generateCardElement(number , color , display_area , class_name){
 
 function paintUserBallAndDisplay(users){
     users_joined.innerHTML = '';
-    Object.keys(users).forEach(user => {
+    users.forEach(user => {
         let user_ball = document.createElement('div');
         user_ball.id = `${user}`;
         user_ball.className = 'user_ball';
