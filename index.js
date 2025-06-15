@@ -319,7 +319,6 @@ io.on('connection' , (user) => {
         }
         
         user.join(ROOM_KEY);
-
         io.to(user.id).emit('take_user_id' , user.id); // Take the user id generated at the frontend for further verification of who made the move.
         
         users_in_room[ROOM_KEY][user.id] = [];
@@ -374,22 +373,34 @@ io.on('connection' , (user) => {
             update_turn(room_key , turn_wheel[room_key].length - 1); // give the user one card picked by his or her own choice
         })
 
-        user.on('disconnect' , () => {
-            (users_in_room[ROOM_KEY][user.id]).forEach(card => reserve_stack_in_room[ROOM_KEY].push(card)); // To hand back the cards held by the user to the reserve stack in the room.
-            let disconnected_index = player_indexes[user.id];
-            shiftIndexes(ROOM_KEY , disconnected_index);
-            io.to(ROOM_KEY).emit('remove_user_ball' , user.id);
+        user.on('disconnect', () => {
+            // Return cards back to reserve
+            if (users_in_room[ROOM_KEY]?.[user.id]) {
+                users_in_room[ROOM_KEY][user.id].forEach(card => reserve_stack_in_room[ROOM_KEY].push(card));
+            }
+
+            const disconnected_index = player_indexes[user.id];
+            shiftIndexes(ROOM_KEY, disconnected_index); // optional if turn_wheel is fixed manually
+
+            io.to(ROOM_KEY).emit('remove_user_ball', user.id);
+
             delete users_in_room[ROOM_KEY][user.id];
-            delete player_indexes[ROOM_KEY];
-            (turn_wheel[ROOM_KEY]).filter(user => user != user.id);
-            console.log('Turn Wheel: ' , turn_wheel[ROOM_KEY]);
-            if(Object.keys(users_in_room[ROOM_KEY]).length == 0){
+            delete player_indexes[user.id];
+
+            // Remove user from turn wheel and fix pointer
+            turn_wheel[ROOM_KEY] = turn_wheel[ROOM_KEY].filter(id => id !== user.id);
+
+            console.log('Turn Wheel: ', turn_wheel[ROOM_KEY]);
+
+            // Cleanup if empty
+            if (Object.keys(users_in_room[ROOM_KEY]).length === 0) {
                 delete users_in_room[ROOM_KEY];
                 delete turn_wheel[ROOM_KEY];
                 delete reserve_stack_in_room[ROOM_KEY];
                 delete playing_stack_in_room[ROOM_KEY];
             }
-        })
+        });
+
     })
 
 })
