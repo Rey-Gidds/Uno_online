@@ -188,6 +188,14 @@ user.on('uno_free_event' , (player_index) => {
     }
 })
 
+user.on('remove_user_ball' , (userId) => {
+    let disconnectedUserBAll = document.getElementById(`${userId}`);
+    if(disconnectedUserBAll){
+        disconnectedUserBAll.remove();
+    }
+    return;
+})
+
 user.on('display_uno_free' , () => {
     not_your_turn.style.display = 'none';
     your_turn.innerHTML = 'UNO FREE';
