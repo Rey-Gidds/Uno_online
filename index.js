@@ -278,13 +278,8 @@ function update_turn(room_key , max_members){
 }
 
 // Helper function to assign the player indexes to every user joined in the respective room. Eg: player 1 , player 2 , ... for a specific room.
-function playerIndex(userId , room_key){
-    for(let i = 0 ; i < turn_wheel[room_key].length; i++){
-        if(userId === turn_wheel[room_key][i]){
-            return i + 1;
-        }
-    }
-    return null;
+function playerIndex(room_key){
+    return turn_wheel[room_key].length - 1;
 }
 
 
@@ -313,7 +308,7 @@ io.on('connection' , (user) => {
         
         users_in_room[ROOM_KEY][user.id] = [];
         turn_wheel[ROOM_KEY].push(user.id);
-        p_index = playerIndex(user.id , ROOM_KEY);
+        p_index = playerIndex(ROOM_KEY);
         
         player_indexes[user.id] = p_index;
         console.log(`${user.id} : ${player_indexes[user.id]}`);
